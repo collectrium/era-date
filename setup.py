@@ -7,7 +7,7 @@ except:
 
 setup(
     name='eradate',
-    version=0.1,
+    version='0.1.1',
     license='private',
     description='Date util to work with BC dates and postgresql Date.',
     long_description=__long_description__,
@@ -15,7 +15,10 @@ setup(
     author_email='',
     url='http://github.com/collectrium/era-date',
     install_requires=[
-        ],
+        # It was not tested on earlier versions of psycopg2 or sqlalchemy.
+        'psycopg2>=2.5.3',
+        'SQLAlchemy>=0.9.4'
+    ],
     packages=['eradate'],
     zip_safe=False,
     classifiers = [
