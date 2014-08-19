@@ -33,6 +33,8 @@ class EraDate(object):
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
         It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
         """
+        if db_string is None:
+            return db_string
         bc = False
         if 'BC' in db_string:
             db_string = db_string.replace('BC', '').strip()

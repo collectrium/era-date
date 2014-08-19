@@ -15,6 +15,7 @@ class EraDateDatabaseTest(unittest.TestCase):
         cls.dateliteral_bc_lower = "3000-05-20 BC"
         cls.dateliteral_bc_higher = "0009-10-19 BC"
         cls.dateliteral_ad = "0085-06-03"
+        cls.dateliteral_none = None
 
         define_eradate_type_casts(postgresql_db_name=postgresql_db_credentials['name'],
                                   postgresql_db_user=postgresql_db_credentials['user'],
@@ -49,20 +50,25 @@ class EraDateDatabaseTest(unittest.TestCase):
         date_bc_lower = EraDate.parse_from_db_literal(self.dateliteral_bc_lower)
         date_bc_higher = EraDate.parse_from_db_literal(self.dateliteral_bc_higher)
         date_ad = EraDate.parse_from_db_literal(self.dateliteral_ad)
+        date_none = EraDate.parse_from_db_literal(self.dateliteral_none)
 
         # Check insertion without errors.
         date_object_bc_lower = self.DBEraDateClass(date=date_bc_lower)
         date_object_bc_higher = self.DBEraDateClass(date=date_bc_higher)
         date_object_ad = self.DBEraDateClass(date=date_ad)
-        self.session.add_all([date_object_bc_lower, date_object_bc_higher, date_object_ad])
+        date_object_none = self.DBEraDateClass(date=date_none)
+        self.session.add_all([date_object_bc_lower, date_object_bc_higher, date_object_ad, date_object_none])
         self.session.commit()
 
         # Check presence of inserted objects in database.
         result = self.session.query(self.DBEraDateClass).all()
-        self.assertEqual(len(result), 3)
+        self.assertEqual(len(result), 4)
         # Check correct type cast
         for index in range(len(result)):
-            self.assertEqual(type(result[index].date), EraDate)
+            if index == len(result) - 1:
+                self.assertEqual(type(result[index].date), type(None))
+            else:
+                self.assertEqual(type(result[index].date), EraDate)
 
         # Check usage of filter and attribute select.
         result = self.session.query(self.DBEraDateClass.date).filter(self.DBEraDateClass.date == date_bc_higher).first()
@@ -78,21 +84,23 @@ class EraDateDatabaseTest(unittest.TestCase):
 
         # Check usage of order_by.
         result = self.session.query(self.DBEraDateClass).order_by(self.DBEraDateClass.date).all()
-        self.assertEqual(len(result), 3)
+        self.assertEqual(len(result), 4)
         self.assertEqual(result[0].date, date_bc_lower)
         self.assertEqual(result[1].date, date_bc_higher)
         self.assertEqual(result[2].date, date_ad)
+        self.assertEqual(result[3].date, date_none)
 
         result = self.session.query(self.DBEraDateClass).order_by(self.DBEraDateClass.date.desc()).all()
-        self.assertEqual(len(result), 3)
-        self.assertEqual(result[2].date, date_bc_lower)
-        self.assertEqual(result[1].date, date_bc_higher)
-        self.assertEqual(result[0].date, date_ad)
+        self.assertEqual(len(result), 4)
+        self.assertEqual(result[3].date, date_bc_lower)
+        self.assertEqual(result[2].date, date_bc_higher)
+        self.assertEqual(result[1].date, date_ad)
+        self.assertEqual(result[0].date, date_none)
 
         # Check deletion
-        self.session.delete(result[0])
+        self.session.delete(result[1])
         result = self.session.query(self.DBEraDateClass).all()
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 3)
 
         result = self.session.query(self.DBEraDateClass).filter(self.DBEraDateClass.date == date_ad).all()
         self.assertEqual(len(result), 0)
