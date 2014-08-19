@@ -8,12 +8,14 @@ class EraDateTest(unittest.TestCase):
         self.dateliteral_bc_higher = "0009-10-19 BC"
         self.dateliteral_ad = "0085-06-03"
         self.date_values_bc_lower = (-3000, 5, 20)
+        self.dateliteral_none = None
 
     def test_custom_date_class(self):
         date_bc_lower = EraDate.parse_from_db_literal(self.dateliteral_bc_lower)
         date_bc_higher = EraDate.parse_from_db_literal(self.dateliteral_bc_higher)
         date_ad = EraDate.parse_from_db_literal(self.dateliteral_ad)
         date_bc_lower_from_values = EraDate(*self.date_values_bc_lower)
+        date_none = EraDate.parse_from_db_literal(self.dateliteral_none)
 
         # Check coorect object type
         self.assertEqual(type(date_bc_lower), EraDate)
@@ -23,6 +25,7 @@ class EraDateTest(unittest.TestCase):
         self.assertEqual(date_bc_higher.as_db_literal(), self.dateliteral_bc_higher)
         self.assertEqual(date_ad.as_db_literal(), self.dateliteral_ad)
         self.assertEqual(date_bc_lower_from_values.as_db_literal(), self.dateliteral_bc_lower)
+        self.assertEqual(date_none, self.dateliteral_none)
 
         # Check correct comparisons
         self.assertTrue(date_bc_lower < date_bc_higher)
