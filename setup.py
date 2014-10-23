@@ -7,7 +7,7 @@ except:
 
 setup(
     name='eradate',
-    version='0.1.1',
+    version='0.1.2',
     license='private',
     description='Date util to work with BC dates and postgresql Date.',
     long_description=__long_description__,
