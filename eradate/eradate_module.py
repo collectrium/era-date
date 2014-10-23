@@ -93,7 +93,10 @@ class EraDate(object):
         return not self.__le__(other)
 
     def __eq__(self, other):
-        return self.__int__() == other.__int__()
+        if other is not None:
+            return self.__int__() == other.__int__()
+        else:
+            return self.__int__() == other
 
     def __ne__(self, other):
         return not self.__eq__(other)

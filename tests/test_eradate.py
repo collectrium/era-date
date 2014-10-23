@@ -34,3 +34,5 @@ class EraDateTest(unittest.TestCase):
         self.assertTrue(date_bc_lower_from_values < date_bc_higher)
         self.assertTrue(not (date_bc_lower is date_bc_lower_from_values))
         self.assertTrue(date_bc_lower_from_values == date_bc_lower)
+        self.assertFalse(date_bc_lower == None)
+        self.assertTrue(date_bc_lower != None)
