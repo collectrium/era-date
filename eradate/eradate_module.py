@@ -11,6 +11,8 @@ class EraDate(object):
 
     Have as_db_literal method to cast object of this type to database literal.
     """
+    db_bc_pattern = r'([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
+    js_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})'
 
     def __init__(self, year, month=1, day=1):
         """
@@ -33,16 +35,19 @@ class EraDate(object):
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
         It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
         """
+        import re
+
         if db_string is None:
             return db_string
-        bc = False
-        if 'BC' in db_string:
-            db_string = db_string.replace('BC', '').strip()
-            bc = True
 
-        args = map(int, db_string.split('-'))
-        if bc:
+        match = re.match(cls.db_bc_pattern, db_string)
+        if not match:
+            raise Exception("Invalid date string: \"{}\"".format(db_string))
+
+        args = map(int, match.groups()[:-1])
+        if match.groups()[-1]:
             args[0] = -args[0]
+
         return cls(*args)
 
     def as_db_literal(self):
