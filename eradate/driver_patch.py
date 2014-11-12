@@ -21,7 +21,7 @@ def define_eradate_type_casts(postgresql_db_name,
     This function dafines types cast, from returned from database literal to EraDate object.
     """
     def cast_era_date(value, cursor):
-        return EraDate.parse_from_db_literal(value)
+        return EraDate.parse(value)
 
     """
     Adapt func. Function to cast object of custom python class to postgresql literal

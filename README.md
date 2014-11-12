@@ -36,8 +36,8 @@ Or only year or year and month. Not provided values will be replaced with defaul
 Or by providing string to parse. String format corresponds with such in postgresql Date type.
 "YYYY-MM-DD" or "YYYY-MM-DD BC"
 
-    ad_date_parsed = EraDate.parse_from_db_literal("2014-05-20")
-    bc_date_parsed = EraDate.parse_from_db_literal("1500-10-01 BC")
+    ad_date_parsed = EraDate.parse("2014-05-20")
+    bc_date_parsed = EraDate.parse("1500-10-01 BC")
 
 Compare eradate objects:
 
@@ -75,7 +75,7 @@ from sqlalchemy can be used. For example, following model will work perfectly:
 Date field will return EraDate object.
 Inserts will work:
 
-    EraDate_0 = EraDate(date=EraDate.parse_from_db_literal("0010-01-01 BC"))
+    EraDate_0 = EraDate(date=EraDate.parse("0010-01-01 BC"))
     EraDate_1 = EraDate()
     EraDate_1.date = EraDate(-2000, 10, 25)
     session.add_all([EraDate_0, EraDate_1])
@@ -85,7 +85,7 @@ Queries with filter will work:
 
     result = session.query(EraDate).filter(EraDate.date == EraDate(-10, 1, 1)).first()
     print result.date # <EraDate: 0010-01-01 BC>
-    result = session.query(EraDate.date).filter(EraDate.date == EraDate.parse_from_db_literal("2000-10-25 BC")).all()
+    result = session.query(EraDate.date).filter(EraDate.date == EraDate.parse("2000-10-25 BC")).all()
     print result[0] # <EraDate: 2000-10-25 BC>
     print result[0].as_db_literal() # 2000-10-25 BC
 
@@ -93,12 +93,12 @@ As mentioned above, EraDate can be initialized with year only, and can parse non
 
     result = session.query(EraDate).filter(EraDate.date > EraDate(1990)).all()
     print result # []
-    result = session.query(EraDate.date).filter(EraDate.date <= EraDate.parse_from_db_literal("1900 BC")).all()
+    result = session.query(EraDate.date).filter(EraDate.date <= EraDate.parse("1900 BC")).all()
     print result[0].as_db_literal() # 2000-10-25 BC
 
 although in these cases result can be unexpected, as EraDate will use default month and day if not provided,
 which means that EraDate(1990) is actually EraDate(1990, 1, 1) and 
-EraDate.parse_from_db_literal("2000 BC") will return same as EraDate.parse_from_db_literal("2000-01-01 BC")
+EraDate.parse("2000 BC") will return same as EraDate.parse("2000-01-01 BC")
 
 Queries with order_by will work:
 

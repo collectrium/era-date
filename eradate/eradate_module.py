@@ -1,3 +1,7 @@
+import re
+import datetime
+
+
 class EraDate(object):
     """
     Class for work with BC dates in postgresql Date column type.
@@ -11,8 +15,9 @@ class EraDate(object):
 
     Have as_db_literal method to cast object of this type to database literal.
     """
-    db_bc_pattern = r'([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
-    js_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})'
+    # db_bc_pattern = r'([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
+    # js_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})'
+    db_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
 
     def __init__(self, year, month=1, day=1):
         """
@@ -26,26 +31,28 @@ class EraDate(object):
         else:
             self.bc = False
             self.year = year
+
         self.month = month
         self.day = day
 
     @classmethod
-    def parse_from_db_literal(cls, db_string):
+    def parse(cls, db_string):
         """
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
-        It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
+        It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC' - not anymore
         """
-        import re
-
         if db_string is None:
             return db_string
 
         match = re.match(cls.db_bc_pattern, db_string)
         if not match:
-            raise Exception("Invalid date string: \"{}\"".format(db_string))
+            raise ValueError("Invalid date string: \"{}\"".format(db_string))
 
-        args = map(int, match.groups()[:-1])
-        if match.groups()[-1]:
+        args, bc = map(int, match.groups()[1:-1]), match.groups()[0] or match.groups()[-1]
+        # Validate
+        datetime.date(*args)
+
+        if bc:
             args[0] = -args[0]
 
         return cls(*args)
@@ -57,6 +64,17 @@ class EraDate(object):
         return_value = '{0:04}-{1:02}-{2:02}'.format(self.year, self.month, self.day)
         if self.bc:
             return_value += ' BC'
+
+        return return_value
+
+    def as_js_literal(self):
+        """
+        Builds string, valid to pass into javascript '-00YYYY-MM-DD' or 'YYYY-MM-DD'
+        """
+        return_value = '{0:04}-{1:02}-{2:02}'.format(self.year, self.month, self.day)
+        if self.bc:
+            return_value = '-00' + return_value
+
         return return_value
 
     def __str__(self):
@@ -112,7 +130,6 @@ class EraDate(object):
         At the moment returns datetime.date if date is not BC, else returns None.
         """
         if not self.bc:
-            import datetime
             return datetime.date(self.year, self.month, self.day)
         else:
             raise Exception("This is BC date, datetime does not support BC dates.")

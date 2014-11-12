@@ -9,13 +9,24 @@ class EraDateTest(unittest.TestCase):
         self.dateliteral_ad = "0085-06-03"
         self.date_values_bc_lower = (-3000, 5, 20)
         self.dateliteral_none = None
+        self.dateliteral_broken = "010-1-123"
+        self.dateliteral_nonvalid = "1900-40-50"
+        self.dateliteral_bc_lower_js = "-003000-05-20"
 
     def test_custom_date_class(self):
-        date_bc_lower = EraDate.parse_from_db_literal(self.dateliteral_bc_lower)
-        date_bc_higher = EraDate.parse_from_db_literal(self.dateliteral_bc_higher)
-        date_ad = EraDate.parse_from_db_literal(self.dateliteral_ad)
+        date_bc_lower = EraDate.parse(self.dateliteral_bc_lower)
+        date_bc_higher = EraDate.parse(self.dateliteral_bc_higher)
+        date_ad = EraDate.parse(self.dateliteral_ad)
         date_bc_lower_from_values = EraDate(*self.date_values_bc_lower)
-        date_none = EraDate.parse_from_db_literal(self.dateliteral_none)
+        date_none = EraDate.parse(self.dateliteral_none)
+        date_bc_lower_js = EraDate.parse(self.dateliteral_bc_lower_js)
+
+        # Check brokens and non valid
+        with self.assertRaises(ValueError):
+            EraDate.parse(self.dateliteral_broken)
+
+        with self.assertRaises(ValueError):
+            EraDate.parse(self.dateliteral_nonvalid)
 
         # Check coorect object type
         self.assertEqual(type(date_bc_lower), EraDate)
@@ -26,6 +37,7 @@ class EraDateTest(unittest.TestCase):
         self.assertEqual(date_ad.as_db_literal(), self.dateliteral_ad)
         self.assertEqual(date_bc_lower_from_values.as_db_literal(), self.dateliteral_bc_lower)
         self.assertEqual(date_none, self.dateliteral_none)
+        self.assertEqual(date_bc_lower_js.as_db_literal(), self.dateliteral_bc_lower)
 
         # Check correct comparisons
         self.assertTrue(date_bc_lower < date_bc_higher)
@@ -36,3 +48,5 @@ class EraDateTest(unittest.TestCase):
         self.assertTrue(date_bc_lower_from_values == date_bc_lower)
         self.assertFalse(date_bc_lower == None)
         self.assertTrue(date_bc_lower != None)
+        self.assertTrue(date_bc_lower_js < date_bc_higher)
+        self.assertTrue(date_bc_lower == date_bc_lower_js)

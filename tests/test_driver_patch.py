@@ -47,10 +47,10 @@ class EraDateDatabaseTest(unittest.TestCase):
         self.session = self.Session()
 
     def test_bc_dates_with_database(self):
-        date_bc_lower = EraDate.parse_from_db_literal(self.dateliteral_bc_lower)
-        date_bc_higher = EraDate.parse_from_db_literal(self.dateliteral_bc_higher)
-        date_ad = EraDate.parse_from_db_literal(self.dateliteral_ad)
-        date_none = EraDate.parse_from_db_literal(self.dateliteral_none)
+        date_bc_lower = EraDate.parse(self.dateliteral_bc_lower)
+        date_bc_higher = EraDate.parse(self.dateliteral_bc_higher)
+        date_ad = EraDate.parse(self.dateliteral_ad)
+        date_none = EraDate.parse(self.dateliteral_none)
 
         # Check insertion without errors.
         date_object_bc_lower = self.DBEraDateClass(date=date_bc_lower)
@@ -75,7 +75,7 @@ class EraDateDatabaseTest(unittest.TestCase):
         result = result[0]
         self.assertEqual(type(result), EraDate)
         self.assertEqual(result, date_bc_higher)
-        self.assertEqual(result, EraDate.parse_from_db_literal(self.dateliteral_bc_higher))
+        self.assertEqual(result, EraDate.parse(self.dateliteral_bc_higher))
         self.assertEqual(result.as_db_literal(), self.dateliteral_bc_higher)
 
         result = self.session.query(self.DBEraDateClass).filter(self.DBEraDateClass.date < date_bc_higher).all()
