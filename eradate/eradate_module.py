@@ -17,7 +17,8 @@ class EraDate(object):
     """
     # db_bc_pattern = r'([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
     # js_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})'
-    db_bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?'
+    # bc_pattern = r'(-[0-9]{2})?([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]?BC)?$'
+    bc_pattern = r'(-[0-9]{2})?([0-9]{4})(-([0-9]{2}))?(-([0-9]{2}))?([ ]?BC)?$'
 
     def __init__(self, year, month=1, day=1):
         """
@@ -34,23 +35,24 @@ class EraDate(object):
 
         self.month = month
         self.day = day
+        # Validate
+        datetime.date(self.year, self.month, self.day)
 
     @classmethod
     def parse(cls, db_string):
         """
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
-        It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC' - not anymore
+        It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
         """
         if db_string is None:
             return db_string
 
-        match = re.match(cls.db_bc_pattern, db_string)
+        match = re.match(cls.bc_pattern, db_string)
         if not match:
             raise ValueError("Invalid date string: \"{}\"".format(db_string))
 
-        args, bc = map(int, match.groups()[1:-1]), match.groups()[0] or match.groups()[-1]
-        # Validate
-        datetime.date(*args)
+        bc = match.groups()[0] or match.groups()[-1]
+        args = [int(val) for val in match.groups()[1:-1:2] if val]
 
         if bc:
             args[0] = -args[0]
