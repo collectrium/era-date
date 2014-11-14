@@ -39,17 +39,17 @@ class EraDate(object):
         datetime.date(self.year, self.month, self.day)
 
     @classmethod
-    def parse(cls, db_string):
+    def parse(cls, date_string):
         """
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
         It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
         """
-        if not db_string:
+        if not date_string:
             return None
 
-        match = re.match(cls.bc_pattern, db_string)
+        match = re.match(cls.bc_pattern, date_string)
         if not match:
-            raise ValueError("Invalid date string: \"{}\"".format(db_string))
+            raise ValueError("Invalid date string: \"{}\"".format(date_string))
 
         bc = match.groups()[0] or match.groups()[-1]
         args = [int(val) for val in match.groups()[1:-1:2] if val]
