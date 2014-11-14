@@ -44,8 +44,8 @@ class EraDate(object):
         Parse database literal 'YYYY-MM-DD BC' or 'YYYY-MM-DD'.
         It also can parse incomplete date literal 'YYYY-MM' or 'YYYY BC'
         """
-        if db_string is None:
-            return db_string
+        if not db_string:
+            return None
 
         match = re.match(cls.bc_pattern, db_string)
         if not match:
