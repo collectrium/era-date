@@ -13,7 +13,7 @@ def define_eradate_type_casts(postgresql_db_name,
     Requires database (postgresql) credentials as arguments.
     """
     import psycopg2
-    from eradate_module import EraDate
+    from .eradate_module import EraDate
 
     """
     Cast PostgreSQL BC date into EraDate object

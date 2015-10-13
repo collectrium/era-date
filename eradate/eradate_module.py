@@ -40,7 +40,7 @@ class EraDate(object):
             db_string = db_string.replace('BC', '').strip()
             bc = True
 
-        args = map(int, db_string.split('-'))
+        args = list(map(int, db_string.split('-')))
         if bc:
             args[0] = -args[0]
         return cls(*args)
