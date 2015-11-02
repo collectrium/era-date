@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from eradate import define_eradate_type_casts, EraDate
-from testutil import sqlalchemy_url, postgresql_db_credentials
+from .testutil import sqlalchemy_url, postgresql_db_credentials
 
 class EraDateDatabaseTest(unittest.TestCase):
 

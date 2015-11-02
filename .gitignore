@@ -1,2 +1,7 @@
 *egg-info/*
 *.pyc
+
+.idea/
+env/
+env2/
+env3/
