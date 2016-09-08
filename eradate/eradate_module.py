@@ -118,13 +118,16 @@ class EraDate(object):
         return not self.__le__(other)
 
     def __eq__(self, other):
-        if other is not None:
+        if isinstance(other, EraDate):
             return self.__int__() == other.__int__()
         else:
-            return self.__int__() == other
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash((self.bc, self.year, self.month, self.day))
 
     def as_datetime(self):
         """

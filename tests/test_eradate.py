@@ -62,3 +62,22 @@ class EraDateTest(unittest.TestCase):
         self.assertTrue(date_bc_lower != None)
         self.assertTrue(date_bc_lower_js < date_bc_higher)
         self.assertTrue(date_bc_lower == date_bc_lower_js)
+
+    def test_hashing(self):
+        ed1 = EraDate(2016, 1, 2)
+        ed2 = EraDate(2016, 1, 2)
+        self.assertEqual(ed1, ed2)
+        self.assertEqual(hash(ed1), hash(ed2))
+
+    def test_comparison(self):
+        ed1 = EraDate(2016, 1, 1)
+        ed2 = EraDate(2016, 1, 2)
+        self.assertLess(ed1, ed2)
+        self.assertGreater(ed2, ed1)
+        self.assertLessEqual(ed1, ed2)
+        self.assertGreaterEqual(ed2, ed1)
+        self.assertNotEqual(ed1, ed2)
+        self.assertEqual(ed1, ed1)
+
+        self.assertNotEqual(ed1, 42)
+        self.assertNotEqual(ed1, 'wat')
