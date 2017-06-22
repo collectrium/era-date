@@ -1,5 +1,7 @@
+import json
 import unittest
 from eradate import EraDate
+
 
 class EraDateTest(unittest.TestCase):
     def setUp(self):
@@ -36,3 +38,7 @@ class EraDateTest(unittest.TestCase):
         self.assertTrue(date_bc_lower_from_values == date_bc_lower)
         self.assertFalse(date_bc_lower == None)
         self.assertTrue(date_bc_lower != None)
+        self.assertEqual(json.dumps(date_bc_lower), '"3000-05-20 BC"')
+        self.assertEqual(json.dumps(date_bc_higher), '"0009-10-19 BC"')
+        self.assertEqual(json.dumps(date_bc_lower_from_values), '"3000-05-20 BC"')
+        self.assertEqual(json.dumps(date_none), 'null')

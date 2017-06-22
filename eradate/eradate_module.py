@@ -1,3 +1,6 @@
+import eradate.make_json_serializable
+
+
 class EraDate(object):
     """
     Class for work with BC dates in postgresql Date column type.
@@ -40,7 +43,7 @@ class EraDate(object):
             db_string = db_string.replace('BC', '').strip()
             bc = True
 
-        args = map(int, db_string.split('-'))
+        args = list(map(int, db_string.split('-')))
         if bc:
             args[0] = -args[0]
         return cls(*args)
@@ -111,3 +114,6 @@ class EraDate(object):
             return datetime.date(self.year, self.month, self.day)
         else:
             raise Exception("This is BC date, datetime does not support BC dates.")
+
+    def to_json(self):
+        return str(self)
